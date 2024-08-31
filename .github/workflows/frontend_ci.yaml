@@ -26,8 +26,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: starter/frontend/
+ #         cache: 'npm'
+ #         cache-dependency-path: starter/frontend/
 
        #Install the dependencies.
       - run: cd starter/frontend && npm ci
@@ -58,8 +58,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: starter/frontend/
+#          cache: 'npm'
+#          cache-dependency-path: starter/frontend/
 
        #Install the dependencies.
       - run: cd starter/frontend && npm ci
@@ -90,8 +90,8 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: starter/frontend/
+#          cache: 'npm'
+ #         cache-dependency-path: starter/frontend/
 
        #Install the dependencies.
       - run: cd starter/frontend && npm ci
