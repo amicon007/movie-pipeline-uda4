@@ -30,14 +30,14 @@ jobs:
 #          cache: 'npm'
  #         cache-dependency-path: starter/backend/
 
-       #Install the dependencies.
-     # - run: cd starter/backend && npm ci
+      # Install the dependencies.
+      - run: cd starter/backend && pip install pipenv && pipenv install --dev
 
       # Run the tests.
       #- run: cd starter/backend && npm test
 
       # Run the linter.
-      - run: cd starter/backend && pip install pipenv && pipenv run lint
+      - run: cd starter/backend && pipenv run lint
 
       # Send a console message at completion.
       - run: |
