@@ -23,20 +23,21 @@ jobs:
       - uses: actions/checkout@v3
 
       # Set up a Node.js environment using the specified node version.
-      - uses: actions/setup-node@v3
+
+      - uses: actions/setup-python@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          python-version: '3.10'
 #          cache: 'npm'
  #         cache-dependency-path: starter/backend/
 
        #Install the dependencies.
-      - run: cd starter/backend && npm ci
+     # - run: cd starter/backend && npm ci
 
       # Run the tests.
       #- run: cd starter/backend && npm test
 
       # Run the linter.
-      - run: cd starter/backend && npm run lint
+      - run: cd starter/backend && pipenv run lint
 
       # Send a console message at completion.
       - run: |
@@ -55,17 +56,17 @@ jobs:
       - uses: actions/checkout@v3
 
       # Set up a Node.js environment using the specified node version.
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-python@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          python-version: '3.10'
   #        cache: 'npm'
   #        cache-dependency-path: starter/backend/
 
        #Install the dependencies.
-      - run: cd starter/backend && npm ci
+      - run: cd starter/backend && pipenv install
 
       # Run the tests.
-      - run: cd starter/backend && npm test
+      - run: cd starter/backend && pipenv run test
 
       # Run the linter.
       #- run: cd starter/backend && npm run lint
@@ -87,14 +88,14 @@ jobs:
       - uses: actions/checkout@v3
 
       # Set up a Node.js environment using the specified node version.
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-python@v5
         with:
-          node-version: ${{ matrix.node-version }}
+          python-version: '3.10'
    #       cache: 'npm'
     #      cache-dependency-path: starter/backend/
 
        #Install the dependencies.
-      - run: cd starter/backend && npm ci
+      #- run: cd starter/backend && npm ci
 
       # Run the tests.
       #- run: cd starter/backend && npm test
