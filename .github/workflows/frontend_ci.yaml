@@ -14,9 +14,9 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    #strategy:
-    #  matrix:
-     #   node-version: [16.x, 18.x]
+    strategy:
+      matrix:
+        node-version: [latest]
 
     steps:
       # Check out the code from the repository.
@@ -26,6 +26,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
        #Install the dependencies.
       - run: cd starter/frontend && npm ci
@@ -56,6 +57,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
        #Install the dependencies.
       - run: cd starter/frontend && npm ci
@@ -86,6 +88,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
        #Install the dependencies.
       - run: cd starter/frontend && npm ci
