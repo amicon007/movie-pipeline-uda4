@@ -1,5 +1,6 @@
 name: frondend_ci_pipeline
 
+
 # Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
 on:
   workflow_dispatch:
@@ -9,7 +10,37 @@ on:
 
 #Use a matrix strategy to use Node.js versions 16.x and 18.x
 jobs:
-  build:
+  linting:
+
+    runs-on: ubuntu-latest
+
+    #strategy:
+    #  matrix:
+     #   node-version: [16.x, 18.x]
+
+    steps:
+      # Check out the code from the repository.
+      - uses: actions/checkout@v3
+
+      # Set up a Node.js environment using the specified node version.
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+       #Install the dependencies.
+      - run: cd starter/frontend && npm ci
+
+      # Run the tests.
+      #- run: cd starter/frontend && npm test
+
+      # Run the linter.
+      - run: cd starter/frontend && npm run lint
+
+      # Send a console message at completion.
+      - run: |
+          echo "Hello ${{github.actor}}. Linting complete"
+
+  testing:
 
     runs-on: ubuntu-latest
 
@@ -33,10 +64,40 @@ jobs:
       - run: cd starter/frontend && npm test
 
       # Run the linter.
-      - run: cd starter/frontend && npm run lint
+      #- run: cd starter/frontend && npm run lint
 
       # Send a console message at completion.
       - run: |
-          echo "Hello ${{github.actor}}. You pushed to ${{github.repository}} at $(date)."
+          echo "Hello ${{github.actor}}. Testing complete."
+
+  build:
+    needs: [linting, testing]
+    runs-on: ubuntu-latest
+
+    #strategy:
+    #  matrix:
+     #   node-version: [16.x, 18.x]
+
+    steps:
+      # Check out the code from the repository.
+      - uses: actions/checkout@v3
+
+      # Set up a Node.js environment using the specified node version.
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+       #Install the dependencies.
+      - run: cd starter/frontend && npm ci
+
+      # Run the tests.
+      #- run: cd starter/frontend && npm test
+
+      # Run the linter.
+      #- run: cd starter/frontend && npm run lint
+
+      # Send a console message at completion.
+      - run: |
+          echo "Hello ${{github.actor}}. You pushed to ${{github.repository}} at $(date). Build done"
 
         
