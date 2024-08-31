@@ -37,7 +37,7 @@ jobs:
       #- run: cd starter/backend && npm test
 
       # Run the linter.
-      - run: cd starter/backend && pipenv run lint
+      - run: cd starter/backend && pip install pipenv && pipenv run lint
 
       # Send a console message at completion.
       - run: |
@@ -63,7 +63,7 @@ jobs:
   #        cache-dependency-path: starter/backend/
 
        #Install the dependencies.
-      - run: cd starter/backend && pipenv install
+      - run: cd starter/backend && pip install pipenv && pipenv install
 
       # Run the tests.
       - run: cd starter/backend && pipenv run test
