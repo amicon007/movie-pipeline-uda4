@@ -104,7 +104,7 @@ jobs:
       #- run: cd starter/backend && npm run lint
 
       # Run the build.
-      #- run: cd starter/backend && npm run build
+      - run: cd starter/backend && docker build -t uda_movie_backend:latest .
 
       # Send a console message at completion.
       - run: |
