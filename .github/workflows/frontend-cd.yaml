@@ -1,4 +1,4 @@
-name: frondend_cd_pipeline
+name: frontend_cd_pipeline
 
 
 # Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
@@ -89,7 +89,9 @@ jobs:
       # Set up a Node.js environment using the specified node version.
 
       - run: |
-          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=http://localhost:5000 --tag=mp-frontend:latest .
+          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=$REACT_APP_MOVIE_API_URL --tag=mp-frontend:latest .
+        variables:
+          REACT_APP_MOVIE_API_URL: "http://localhost:5000"
 
       # Send a console message at completion.
       - run: |
