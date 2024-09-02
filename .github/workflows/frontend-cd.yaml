@@ -115,6 +115,12 @@ jobs:
 
       - name: Logout of ECR
         run: docker logout ${{ env.REPOSITORY_URI }}
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name moviepipelinecluster --region us-east-1
+          
+
         
       # Send a console message at completion.
       - run: |
