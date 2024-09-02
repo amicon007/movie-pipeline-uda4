@@ -1,10 +1,10 @@
 name: backend_cd_pipeline
 
 
-# Ensure the workflow runs manually and on pull_request to the main branch
+# Ensure the workflow runs manually and on push to the main branch
 on:
   workflow_dispatch:
-  pull_request:
+  push:
     branches: 
       - main
 
