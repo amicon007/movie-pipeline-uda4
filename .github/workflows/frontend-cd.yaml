@@ -129,6 +129,12 @@ jobs:
           cd ./starter/frontend/k8s && kustomize edit set image frontend=${{ env.REPOSITORY_URI }}:latest
 #         kubectl apply -f ./starter/frontend/k8s/deployment.yaml
 #         kubectl apply -f ./starter/frontend/k8s/service.yaml
+
+      - name: Apply kubectl
+        run: |
+
+         kubectl apply -f ./starter/frontend/k8s/deployment.yaml
+         kubectl apply -f ./starter/frontend/k8s/service.yaml
         
       # Send a console message at completion.
       - run: |
