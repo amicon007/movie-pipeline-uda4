@@ -120,7 +120,7 @@ jobs:
       - name: Get ECR repository URI
         id: ecr
         run: |
-          echo "REPOSITORY_URI=845193206482.dkr.ecr.us-east-1.amazonaws.com/moviepipeline/frontend" >> $GITHUB_ENV
+          echo "REPOSITORY_URI=845193206482.dkr.ecr.us-east-1.amazonaws.com/moviepipeline/backend" >> $GITHUB_ENV
 
 
       # Set up a Node.js environment using the specified node version.
