@@ -1,7 +1,7 @@
 name: frontend_ci_pipeline
 
 
-# Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
+# Ensure the workflow runs manually and on pull_request to the main branch
 on:
   workflow_dispatch:
   pull_request:
