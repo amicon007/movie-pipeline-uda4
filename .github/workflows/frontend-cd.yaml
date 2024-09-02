@@ -120,7 +120,8 @@ jobs:
         run: |
           aws eks update-kubeconfig --name moviepipelinecluster --region us-east-1
           kustomize edit set image frontend=${{ env.REPOSITORY_URI }}:latest
-          cd frontend/k8s && kustomize build | kubectl apply -f -
+          kubectl apply -f ./starter/frontend/k8s/deployment.yaml
+          kubectl apply -f ./starter/frontend/k8s/service.yaml
        
 
         
