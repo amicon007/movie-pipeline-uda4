@@ -4,7 +4,7 @@ name: backend_ci_pipeline
 # Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches: 
       - main
 
