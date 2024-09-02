@@ -1,14 +1,13 @@
 name: backend_cd_pipeline
 
 
-# Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
+# Ensure the workflow runs manually and on pull_request to the main branch
 on:
   workflow_dispatch:
-  push:
+  pull_request:
     branches: 
       - main
 
-#Use a matrix strategy to use Node.js versions 16.x and 18.x
 jobs:
   linting:
 
@@ -22,19 +21,14 @@ jobs:
       # Check out the code from the repository.
       - uses: actions/checkout@v3
 
-      # Set up a Node.js environment using the specified node version.
+      # Set up a python using the specified node version.
 
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-#          cache: 'npm'
- #         cache-dependency-path: starter/backend/
 
       # Install the dependencies.
       - run: cd starter/backend && pip install pipenv && pipenv install --dev
-
-      # Run the tests.
-      #- run: cd starter/backend && npm test
 
       # Run the linter.
       - run: cd starter/backend && pipenv run lint
@@ -55,21 +49,16 @@ jobs:
       # Check out the code from the repository.
       - uses: actions/checkout@v3
 
-      # Set up a Node.js environment using the specified node version.
+      # Set up a python environment using the specified node version.
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-  #        cache: 'npm'
-  #        cache-dependency-path: starter/backend/
 
        #Install the dependencies.
       - run: cd starter/backend && pip install pipenv && pipenv install
 
       # Run the tests.
       - run: cd starter/backend && pipenv run test
-
-      # Run the linter.
-      #- run: cd starter/backend && npm run lint
 
       # Send a console message at completion.
       - run: |
@@ -87,24 +76,12 @@ jobs:
       # Check out the code from the repository.
       - uses: actions/checkout@v3
 
-      # Set up a Node.js environment using the specified node version.
+      # Set up a python environment using the specified node version.
       - uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-   #       cache: 'npm'
-    #      cache-dependency-path: starter/backend/
 
-       #Install the dependencies.
-      #- run: cd starter/backend && npm ci
-
-      # Run the tests.
-      #- run: cd starter/backend && npm test
-
-      # Run the linter.
-      #- run: cd starter/backend && npm run lint
-
-      # Run the build.
-      #- run: cd starter/backend && docker build -t uda_movie_backend:latest .
+      # Setup AWS
       - name: AWS configure credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -122,9 +99,7 @@ jobs:
         run: |
           echo "REPOSITORY_URI=845193206482.dkr.ecr.us-east-1.amazonaws.com/moviepipeline/backend" >> $GITHUB_ENV
 
-
-      # Set up a Node.js environment using the specified node version.
-
+      # Run docker build
       - run: |
           cd starter/backend && docker build --build-arg=REACT_APP_MOVIE_API_URL=$REACT_APP_MOVIE_API_URL --tag=${{ env.REPOSITORY_URI }}:latest .
           docker push ${{ env.REPOSITORY_URI }}:latest
@@ -132,19 +107,16 @@ jobs:
       - name: Logout of ECR
         run: docker logout ${{ env.REPOSITORY_URI }}
 
+      # Setup and apply kubectl - Deploy
+
       - name: Update kubeconfig
         run: |
           aws eks update-kubeconfig --name moviepipelinecluster --region us-east-1
-#          kustomize edit set image frontend=${{ env.REPOSITORY_URI }}:latest
-#          kubectl apply -f ./starter/frontend/k8s/deployment.yaml
-#          kubectl apply -f ./starter/frontend/k8s/service.yaml
        
       - name: Update kimage
         run: |
 
           cd ./starter/backend/k8s && kustomize edit set image backend=${{ env.REPOSITORY_URI }}:latest
-#         kubectl apply -f ./starter/frontend/k8s/deployment.yaml
-#         kubectl apply -f ./starter/frontend/k8s/service.yaml
 
       - name: Apply kubectl
         run: |
