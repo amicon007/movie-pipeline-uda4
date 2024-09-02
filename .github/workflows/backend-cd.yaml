@@ -1,4 +1,4 @@
-name: backend_ci_pipeline
+name: backend_cd_pipeline
 
 
 # Ensure the workflow runs on schedule (Sunday at 0:00) and on push to the main branch
