@@ -88,11 +88,34 @@ jobs:
         env:    
           REACT_APP_MOVIE_API_URL: http://localhost:5000
 
+      #configure AWS credentials
+      - name: AWS configure credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          aws-region: us-east-1
+
+      #Login to AWS ECR
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get ECR repository URI
+        id: ecr
+        run: |
+          echo "REPOSITORY_URI=$(aws ecr describe-repositories --repository-names ${{ secrets.ECR_REPOSITORY }} --query 'repositories[0].repositoryUri' --output text)" >> $GITHUB_ENV
+
+
       # Set up a Node.js environment using the specified node version.
 
       - run: |
-          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=$REACT_APP_MOVIE_API_URL --tag=mp-frontend:latest .
+          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=$REACT_APP_MOVIE_API_URL --tag=${{ env.REPOSITORY_URI }}:latest .
+          docker push ${{ env.REPOSITORY_URI }}:latest
 
+      - name: Logout of ECR
+        run: docker logout ${{ env.REPOSITORY_URI }}
+        
       # Send a console message at completion.
       - run: |
           echo "Hello ${{github.actor}}. You pushed to ${{github.repository}} at $(date). Build done"
