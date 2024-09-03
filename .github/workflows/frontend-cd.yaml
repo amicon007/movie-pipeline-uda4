@@ -106,7 +106,7 @@ jobs:
       # Run docker Build
 
       - run: |
-          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com --tag=frontend:${GITHUB_SHA} . .
+          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com --tag=frontend:${GITHUB_SHA} .
           docker tag frontend:${GITHUB_SHA} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
 
@@ -127,7 +127,6 @@ jobs:
       - name: Apply kubectl
         run: |
 
-          cd starter/frontend/k8s && kustomize edit set image frontend=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
           kustomize build | kubectl apply -f -
           kubectl get svc -A
         
