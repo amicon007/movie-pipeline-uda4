@@ -106,12 +106,12 @@ jobs:
       # Run docker Build
 
       - run: |
-          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com --tag=${{ env.REPOSITORY_URI }}:${GITHUB_SHA} .
+          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com --tag=frontend:${GITHUB_SHA} . .
           docker tag frontend:${GITHUB_SHA} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
           docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
 
       - name: Logout of ECR
-        run: docker logout ${{ env.REPOSITORY_URI }}
+        run: docker logout ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend
 
       # Run kubectl - Deploy application
 
