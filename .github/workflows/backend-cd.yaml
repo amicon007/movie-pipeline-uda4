@@ -101,7 +101,7 @@ jobs:
 
       # Run docker build
       - run: |
-          cd starter/backend && docker build -t bankend:${GITHUB_SHA} .
+          cd starter/backend && docker build -t backend:${GITHUB_SHA} .
           docker tag backend:${GITHUB_SHA} ${{ env.REPOSITORY_URI }}:${GITHUB_SHA}
           docker push ${{ env.REPOSITORY_URI }}:${GITHUB_SHA}
 
