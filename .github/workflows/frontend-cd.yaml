@@ -81,8 +81,6 @@ jobs:
     steps:
       # Check out the code from the repository.
       - uses: actions/checkout@v3
-        env:    
-          REACT_APP_MOVIE_API_URL: http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com
 
       #configure AWS credentials
       - name: AWS configure credentials
@@ -96,12 +94,6 @@ jobs:
       #Login to AWS ECR
       - name: Login to ECR
         uses: aws-actions/amazon-ecr-login@v2
-
-      - name: Get ECR repository URI
-        id: ecr
-        run: |
-          echo "REPOSITORY_URI=845193206482.dkr.ecr.us-east-1.amazonaws.com/moviepipeline/frontend" >> $GITHUB_ENV
-
 
       # Run docker Build
 
