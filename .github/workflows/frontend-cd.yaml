@@ -127,7 +127,7 @@ jobs:
       - name: Apply kubectl
         run: |
 
-          kustomize build | kubectl apply -f -
+          cd starter/frontend/k8s && kustomize build | kubectl apply -f -
           kubectl get svc -A
         
       # Send a console message at completion.
