@@ -82,7 +82,7 @@ jobs:
           python-version: '3.10'
 
       # Run the build.
-      - run: cd starter/backend && docker build -t uda_movie_backend:latest .
+      - run: cd starter/backend && docker build -t backend .
 
       # Send a console message at completion.
       - run: |

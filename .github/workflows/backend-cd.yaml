@@ -64,7 +64,7 @@ jobs:
       - run: |
           echo "Hello ${{github.actor}}. Testing complete."
 
-  build:
+  deploy:
     needs: [linting, testing]
     runs-on: ubuntu-latest
 
@@ -97,12 +97,13 @@ jobs:
       - name: Get ECR repository URI
         id: ecr
         run: |
-          echo "REPOSITORY_URI=845193206482.dkr.ecr.us-east-1.amazonaws.com/moviepipeline/backend" >> $GITHUB_ENV
+          echo "REPOSITORY_URI=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/backend" >> $GITHUB_ENV
 
       # Run docker build
       - run: |
-          cd starter/backend && docker build --build-arg=REACT_APP_MOVIE_API_URL=$REACT_APP_MOVIE_API_URL --tag=${{ env.REPOSITORY_URI }}:latest .
-          docker push ${{ env.REPOSITORY_URI }}:latest
+          cd starter/backend && docker build -t bankend:${GITHUB_SHA} .
+          docker tag backend:${GITHUB_SHA} ${{ env.REPOSITORY_URI }}:${GITHUB_SHA}
+          docker push ${{ env.REPOSITORY_URI }}:${GITHUB_SHA}
 
       - name: Logout of ECR
         run: docker logout ${{ env.REPOSITORY_URI }}
@@ -116,17 +117,17 @@ jobs:
       - name: Update kimage
         run: |
 
-          cd ./starter/backend/k8s && kustomize edit set image backend=${{ env.REPOSITORY_URI }}:latest
+          cd ./starter/backend/k8s && kustomize edit set image backend=${{ env.REPOSITORY_URI }}:${GITHUB_SHA}
 
       - name: Apply kubectl
         run: |
 
-         kubectl apply -f ./starter/backend/k8s/deployment.yaml
-         kubectl apply -f ./starter/backend/k8s/service.yaml
+         cd ./starter/backend/k8s && kustomize build | kubectl apply -f -
 
 
       # Send a console message at completion.
       - run: |
           echo "Hello ${{github.actor}}. You pushed to ${{github.repository}} at $(date). Build done"
+          cd starter/backend/k8s && kubectl get svc -A
 
         
