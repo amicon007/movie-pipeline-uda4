@@ -1,0 +1,138 @@
+name: frontend_cd_pipeline
+
+
+# Ensure the workflow runs manually and on push to the main branch
+on:
+  workflow_dispatch:
+  push:
+    branches: 
+      - main
+
+jobs:
+  linting:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [latest]
+
+    steps:
+      # Check out the code from the repository.
+      - uses: actions/checkout@v3
+
+      # Set up a Node.js environment using the specified node version.
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: starter/frontend/
+
+       #Install the dependencies.
+      - run: cd starter/frontend && npm ci
+
+      # Run the tests.
+      #- run: cd starter/frontend && npm test
+
+      # Run the linter.
+      - run: cd starter/frontend && npm run lint
+
+      # Send a console message at completion.
+      - run: |
+          echo "Hello ${{github.actor}}. Linting complete"
+
+  testing:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [latest]
+
+    steps:
+      # Check out the code from the repository.
+      - uses: actions/checkout@v3
+
+      # Set up a Node.js environment using the specified node version.
+      - uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: starter/frontend/
+
+       #Install the dependencies.
+      - run: cd starter/frontend && npm ci
+
+      # Run the tests.
+      - run: cd starter/frontend && npm test
+
+      # Send a console message at completion.
+      - run: |
+          echo "Hello ${{github.actor}}. Testing complete."
+
+  deloy:
+    needs: [linting, testing]
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [latest]
+
+    steps:
+      # Check out the code from the repository.
+      - uses: actions/checkout@v3
+        env:    
+          REACT_APP_MOVIE_API_URL: http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com
+
+      #configure AWS credentials
+      - name: AWS configure credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{secrets.AWS_SESSION_TOKEN}}
+          aws-region: us-east-1
+
+      #Login to AWS ECR
+      - name: Login to ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Get ECR repository URI
+        id: ecr
+        run: |
+          echo "REPOSITORY_URI=845193206482.dkr.ecr.us-east-1.amazonaws.com/moviepipeline/frontend" >> $GITHUB_ENV
+
+
+      # Run docker Build
+
+      - run: |
+          cd starter/frontend && docker build --build-arg=REACT_APP_MOVIE_API_URL=http://a3a8d84262a094021a7503ecdedc1f43-1728757105.us-east-1.elb.amazonaws.com --tag=${{ env.REPOSITORY_URI }}:${GITHUB_SHA} .
+          docker tag frontend:${GITHUB_SHA} ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
+          docker push ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
+
+      - name: Logout of ECR
+        run: docker logout ${{ env.REPOSITORY_URI }}
+
+      # Run kubectl - Deploy application
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --name moviepipelinecluster --region us-east-1
+       
+      - name: Update kimage
+        run: |
+
+          cd ./starter/frontend/k8s && kustomize edit set image frontend=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
+
+      - name: Apply kubectl
+        run: |
+
+          cd starter/frontend/k8s && kustomize edit set image frontend=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com/frontend:${GITHUB_SHA}
+          kustomize build | kubectl apply -f -
+          kubectl get svc -A
+        
+      # Send a console message at completion.
+      - run: |
+          echo "Hello ${{github.actor}}. You pushed to ${{github.repository}} at $(date). Build done"
+
+        
